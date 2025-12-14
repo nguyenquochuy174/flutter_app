@@ -74,7 +74,7 @@ class MyClassroom extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 400,
+            width: 300,
             child: Text(
               "Lập trình ứng dụng cho các thiết bị di động", 
               style: TextStyle(fontSize: 25, color: Colors.white), 
