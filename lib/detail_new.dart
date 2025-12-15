@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nhom4/model/new.dart';
-
 class DetailNews extends StatelessWidget {
   final Article article;
 
@@ -10,98 +9,82 @@ class DetailNews extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chi tiết tin tức", style: TextStyle(color: Colors.white)),
+        title: const Text("Chi tiết tin tức", style: TextStyle(fontSize: 22, color: Colors.white),),
         backgroundColor: Colors.blue,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                article.urlToImage ?? "",
-                width: double.infinity,
-                height: 220,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    "assets/images/nophoto.png",
-                    width: double.infinity,
-                    height: 220,
-                    fit: BoxFit.cover,
-                  );
-                },
-              ),
+            Image.network(
+              article.urlToImage ?? "",
+              width: double.infinity,
+              height: 220,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) {
+                return Image.asset(
+                  "assets/images/nophoto.png",
+                  height: 220,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
-
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     article.title,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Text(
                         article.source.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Icon(Icons.access_time, size: 14, color: Colors.grey),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 10),
                       Text(
-                        article.publishedAt.toLocal().toString().substring(
-                          0,
-                          16,
-                        ),
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                        _formatDate(article.publishedAt),
+                        style: const TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 15),
-
+                  const SizedBox(height: 15),
                   if (article.author != null)
                     Text(
                       "Tác giả: ${article.author}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: const TextStyle(fontStyle: FontStyle.italic),
                     ),
-
-                  SizedBox(height: 15),
-
+                  const SizedBox(height: 15),
                   Text(
-                    article.description,
-                    style: const TextStyle(fontSize: 16, height: 1.5),
+                    article.description.isNotEmpty
+                        ? article.description
+                        : "Không có mô tả",
+                    style: const TextStyle(fontSize: 16),
                   ),
-
-                  SizedBox(height: 15),
-                  Text(
-                    article.content,
-                    style: const TextStyle(fontSize: 16, height: 1.6),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  Text(
+                  const SizedBox(height: 15),
+                  if (article.content.isNotEmpty)
+                    Text(
+                      article.content,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  const SizedBox(height: 20),
+                  const Text(
                     "Nguồn bài viết:",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-
-                  SizedBox(height: 5),
-
+                  const SizedBox(height: 5),
                   SelectableText(
                     article.url,
                     style: const TextStyle(
@@ -116,5 +99,9 @@ class DetailNews extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

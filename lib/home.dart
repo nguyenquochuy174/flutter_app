@@ -14,6 +14,8 @@ import 'package:flutter_nhom4/my_classroom_img.dart';
 import 'package:flutter_nhom4/my_place.dart';
 import 'package:flutter_nhom4/my_product.dart';
 import 'package:flutter_nhom4/register.dart';
+import 'falling_leaves.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -72,93 +74,102 @@ class _HomeState extends State<Home> {
       "icon": Icons.app_registration,
     },
   ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Danh sách bài tập",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.blue,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.blue),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    "Nguyễn Quốc Huy",
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Mã sinh viên: 22T1080012",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Lập trình di động - Nhóm 4",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ],
-              ),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "Danh sách bài tập",
+              style: TextStyle(color: Colors.white),
             ),
-            ListTile(
-              leading: const Icon(Icons.list, color: Colors.blue, size: 28),
-              title: const Text(
-                "Danh sách bài tập",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ...exercises.asMap().entries.map((entry) {
-              int index = entry.key;
-              var item = entry.value;
+            backgroundColor: Colors.blue,
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: const BoxDecoration(color: Colors.blue),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "Nguyễn Quốc Huy",
+                        style: TextStyle(color: Colors.white, fontSize: 24),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Mã sinh viên: 22T1080012",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Lập trình di động - Nhóm 4",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.list, color: Colors.blue, size: 28),
+                  title: const Text(
+                    "Danh sách bài tập",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ...exercises.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  var item = entry.value;
 
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.blue.shade100,
-                  radius: 22,
-                  child: Text(
-                    "${index + 1}",
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blue.shade100,
+                      radius: 22,
+                      child: Text(
+                        "${index + 1}",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                title: Row(
-                  children: [
-                    Icon(item["icon"], color: Colors.blue, size: 20),
-                    const SizedBox(width: 8),
-                    Text(item["title"]),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => item["page"] as Widget),
+                    title: Row(
+                      children: [
+                        Icon(item["icon"], color: Colors.blue, size: 20),
+                        const SizedBox(width: 8),
+                        Text(item["title"]),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => item["page"] as Widget,
+                        ),
+                      );
+                    },
                   );
-                },
-              );
-            }).toList(),
-          ],
+                }).toList(),
+              ],
+            ),
+          ),
+          body: const Center(
+            child: Text(
+              "Chọn bài tập trong Menu",
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
         ),
-      ),
 
-      body: const Center(
-        child: Text("Chọn bài tập trong Menu", style: TextStyle(fontSize: 18)),
-      ),
+        const FallingLeaves(),
+      ],
     );
   }
 }

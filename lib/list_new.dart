@@ -9,7 +9,6 @@ class ListNews extends StatefulWidget {
   @override
   State<ListNews> createState() => _ListNewsState();
 }
-
 class _ListNewsState extends State<ListNews> {
   String searchText = "";
   late Future<List<Article>> futureArticles;
@@ -24,60 +23,57 @@ class _ListNewsState extends State<ListNews> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Tin tức nổi bật",
           style: TextStyle(fontSize: 22, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.blue,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder<List<Article>>(
         future: futureArticles,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
             return Center(child: Text("Lỗi tải dữ liệu: ${snapshot.error}"));
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text("Không có tin tức nào"));
+          final articles = snapshot.data ?? [];
+
+          if (articles.isEmpty) {
+            return const Center(child: Text("Không có tin tức nào"));
           }
 
-          List<Article> allArticles = snapshot.data!;
+          final filtered = articles.where((article) {
+            final title = article.title.toLowerCase();
+            final desc = article.description.toLowerCase();
 
-          List<Article> filtered = allArticles.where((article) {
-            return article.title.toLowerCase().contains(
-                  searchText.toLowerCase(),
-                ) ||
-                article.description.toLowerCase().contains(
-                  searchText.toLowerCase(),
-                );
+            return title.contains(searchText.toLowerCase()) ||
+                desc.contains(searchText.toLowerCase());
           }).toList();
 
           return Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: "Tìm kiếm tin tức...",
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onChanged: (value) {
-                    setState(() {
-                      searchText = value;
-                    });
+                    setState(() => searchText = value);
                   },
                 ),
               ),
-              Expanded(child: myListView(filtered)),
+              Expanded(child: _buildList(filtered)),
             ],
           );
         },
@@ -85,31 +81,32 @@ class _ListNewsState extends State<ListNews> {
     );
   }
 
-  Widget myListView(List<Article> articles) {
+  Widget _buildList(List<Article> articles) {
     return ListView.builder(
       itemCount: articles.length,
       itemBuilder: (context, index) {
-        return myItem(articles[index]);
+        return _buildItem(articles[index]);
       },
     );
   }
 
-  Widget myItem(Article article) {
+  Widget _buildItem(Article article) {
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailNews(article: article)),
+          MaterialPageRoute(
+            builder: (_) => DetailNews(article: article),
+          ),
         );
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        elevation: 4,
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 3,
         child: Padding(
-          padding: EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -118,7 +115,7 @@ class _ListNewsState extends State<ListNews> {
                   width: 100,
                   height: 80,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
+                  errorBuilder: (_, __, ___) {
                     return Image.asset(
                       "assets/images/nophoto.png",
                       width: 100,
@@ -128,8 +125,7 @@ class _ListNewsState extends State<ListNews> {
                   },
                 ),
               ),
-
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,37 +134,26 @@ class _ListNewsState extends State<ListNews> {
                       article.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    SizedBox(height: 6),
-
+                    const SizedBox(height: 6),
                     Text(
                       article.source.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.blue,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
-
-                    SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        Icon(Icons.access_time, size: 14, color: Colors.grey),
-                        SizedBox(width: 4),
-                        Text(
-                          article.publishedAt.toLocal().toString().substring(
-                            0,
-                            16,
-                          ),
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatDate(article.publishedAt),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
                     ),
                   ],
                 ),
@@ -180,24 +165,7 @@ class _ListNewsState extends State<ListNews> {
     );
   }
 
-  Widget newsImage(
-    String? imageUrl, {
-    double width = double.infinity,
-    double height = 200,
-  }) {
-    return Image.network(
-      imageUrl ?? "",
-      width: width,
-      height: height,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return Image.asset(
-          "assets/images/nophoto.png",
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-        );
-      },
-    );
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

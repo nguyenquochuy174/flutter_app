@@ -1,47 +1,42 @@
 class Article {
-  Source source;
-  String? author;
-  String title;
-  String description;
-  String url;
-  String? urlToImage;
-  DateTime publishedAt;
-  String content;
+  final String title;
+  final String description;
+  final String content;
+  final String url;
+  final String? urlToImage;
+  final DateTime publishedAt;
+  final Source source;
+  final String? author;
 
   Article({
-    required this.source,
-    this.author,
     required this.title,
     required this.description,
-    required this.url,
-    this.urlToImage,
-    required this.publishedAt,
     required this.content,
+    required this.url,
+    required this.urlToImage,
+    required this.publishedAt,
+    required this.source,
+    this.author,
   });
 
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
-      source: Source.fromJson(json['source']),
-      author: json['author'],
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      url: json['url'],
-      urlToImage: json['urlToImage'],
-      publishedAt: DateTime.parse(json['publishedAt']),
       content: json['content'] ?? '',
+      url: json['link'] ?? '',
+      urlToImage: json['image_url'],
+      publishedAt: DateTime.tryParse(json['pubDate'] ?? '') ?? DateTime.now(),
+      source: Source(name: json['source_id'] ?? 'Unknown'),
+      author: (json['creator'] != null && json['creator'] is List)
+          ? json['creator'][0]
+          : null,
     );
   }
 }
+
 class Source {
-  String? id;
-  String name;
+  final String name;
 
-  Source({this.id, required this.name});
-
-  factory Source.fromJson(Map<String, dynamic> json) {
-    return Source(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
+  Source({required this.name});
 }
